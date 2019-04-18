@@ -80,14 +80,3 @@ def store_metadata(output_file, inverse_vocabulary_dict):
     with open(output_file, "w") as metadata_file:
         for key in sorted(inverse_vocabulary_dict):
             metadata_file.write("{}\n".format(inverse_vocabulary_dict[key]))
-
-
-def get_GPU_index(GPU_indices=[0,1], current_index=None):
-    if current_index == None:
-        return 0
-    else:
-        if (current_index+1) == len(GPU_indices):
-            return 0
-        else:
-            current_index += 1
-            return current_index
