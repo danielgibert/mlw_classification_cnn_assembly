@@ -1,6 +1,6 @@
  # Convolutional Neural Networks for Classification of Malware Assembly Code
 
-This code base is no longer maintained and exists as a historical artifcal to supplement my [Master's thesis](https://upcommons.upc.edu/handle/2117/91319) and the paper [Convolutional Neural Network for Classification of Malware Assembly Code](http://ebooks.iospress.nl/publication/47742).
+This code base is no longer maintained and exists as a historical artifact to supplement my [Master's thesis](https://upcommons.upc.edu/handle/2117/91319) and the paper [Convolutional Neural Network for Classification of Malware Assembly Code](http://ebooks.iospress.nl/publication/47742).
 
 
 ## Requirements

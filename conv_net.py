@@ -8,9 +8,6 @@ class ConvNet(BaseNN):
     def construct(self):
         self.input_x = tf.placeholder(tf.int32, [None, self.parameters['max_opcodes']], name="input_x")
         self.input_y = tf.placeholder(tf.float32, [None, self.parameters['num_classes']], name="input_y")
-        #print "Input X: {}".format(self.input_x)
-        #print "Input Y: {}".format(self.input_y)
-
         self.dropout_hidden_keep_prob = tf.placeholder(tf.float32, name="dropout_hidden_keep_prob")
 
         l2_regularizer = tf.contrib.layers.l2_regularizer(scale=self.parameters['l2_reg_lambda'], scope=None)
@@ -20,9 +17,7 @@ class ConvNet(BaseNN):
                 tf.random_uniform([len(self.vocabulary_dict), self.parameters['embedding_size']], -1.0, 1.0),
                 name="W")
             self.embedded_input = tf.nn.embedding_lookup(self.embedding, self.input_x)
-            #print "Embedding: {}".format(self.embedded_input)
             self.embedded_input_expanded = tf.expand_dims(self.embedded_input, -1)
-            #print "Embedding expanded: {}".format(self.embedded_input_expanded)
 
 
         pooled_outputs = []
@@ -34,9 +29,7 @@ class ConvNet(BaseNN):
                                                         data_format='channels_last',
                                                         use_bias=True,
                                                         activation="elu")(self.embedded_input_expanded)
-                #print "Conv {}x{}: {}".format(k, self.parameters['num_filters'], conv)
                 pool = tf.nn.max_pool(conv, [1, conv.shape[1], 1, 1], [1, 1, 1, 1], "VALID")
-                #print "Pool: {}".format(pool)
                 pooled_outputs.append(pool)
 
         with tf.device('gpu:0'), tf.name_scope("features"):
@@ -44,12 +37,10 @@ class ConvNet(BaseNN):
             num_filters_total = self.parameters['num_filters'] * len(self.parameters['kernel_sizes'])
             self.h_pool = tf.concat(axis=3, values=pooled_outputs)
             self.h_pool_flat = tf.reshape(self.h_pool, [-1, num_filters_total], name="features")
-            #print "Features: {}".format(self.h_pool_flat)
 
         with tf.device('/gpu:0'), tf.name_scope("output"):
             self.dropout_output = tf.layers.dropout(self.h_pool_flat, rate=self.dropout_hidden_keep_prob)
             self.scores = tf.layers.dense(self.dropout_output, self.parameters['num_classes'])
-            #print "Scores: {}".format(self.scores)
             self.predictions = tf.argmax(self.scores, 1, name="predictions")
             self.softmax_probabilities = tf.nn.softmax(self.scores, name="probabilities")
 

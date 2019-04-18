@@ -87,7 +87,6 @@ class BaseNN(object):
     def init_writers(self):
         """
         Initializes train and dev summary writers (Needed for Tensorboard)
-        :return:
         """
         self.train_summary_writer = tf.summary.FileWriter(self.train_summary_dir)
         self.dev_summary_writer = tf.summary.FileWriter(self.dev_summary_dir)
@@ -200,22 +199,13 @@ class BaseNN(object):
             """
             A single training step
             """
-            if 'phase' in self.parameters:
-                feed_dict = {
-                    self.network_graph.get_operation_by_name("input_x").outputs[0]: x_batch,
-                    self.network_graph.get_operation_by_name("input_y").outputs[0]: y_batch,
-                    self.network_graph.get_operation_by_name("phase").outputs[0]: True,
-                    self.network_graph.get_operation_by_name("dropout_hidden_keep_prob").outputs[0]: self.parameters[
-                        "dropout_hidden_keep_prob"]
-                }
-            else:
-                feed_dict = {
-                    self.network_graph.get_operation_by_name("input_x").outputs[0]: x_batch,
-                    self.network_graph.get_operation_by_name("input_y").outputs[0]: y_batch,
-                    self.network_graph.get_operation_by_name("dropout_hidden_keep_prob").outputs[0]: self.parameters[
-                        "dropout_hidden_keep_prob"]
+            feed_dict = {
+                self.network_graph.get_operation_by_name("input_x").outputs[0]: x_batch,
+                self.network_graph.get_operation_by_name("input_y").outputs[0]: y_batch,
+                self.network_graph.get_operation_by_name("dropout_hidden_keep_prob").outputs[0]: self.parameters[
+                    "dropout_hidden_keep_prob"]
+            }
 
-                }
 
             start_time = time.time()
             _, step, train_summaries, grad_summaries, loss, accuracy = self.network_session.run(
@@ -243,19 +233,11 @@ class BaseNN(object):
             return loss, accuracy
 
         def dev_step(x_batch, y_batch):
-            if 'phase' in self.parameters:
-                feed_dict = {
-                    self.network_graph.get_operation_by_name("input_x").outputs[0]: x_batch,
-                    self.network_graph.get_operation_by_name("input_y").outputs[0]: y_batch,
-                    self.network_graph.get_operation_by_name("phase").outputs[0]: True,
-                    self.network_graph.get_operation_by_name("dropout_hidden_keep_prob").outputs[0]: 0.0
-                }
-            else:
-                feed_dict = {
-                    self.network_graph.get_operation_by_name("input_x").outputs[0]: x_batch,
-                    self.network_graph.get_operation_by_name("input_y").outputs[0]: y_batch,
-                    self.network_graph.get_operation_by_name("dropout_hidden_keep_prob").outputs[0]: 0.0
-                }
+            feed_dict = {
+                self.network_graph.get_operation_by_name("input_x").outputs[0]: x_batch,
+                self.network_graph.get_operation_by_name("input_y").outputs[0]: y_batch,
+                self.network_graph.get_operation_by_name("dropout_hidden_keep_prob").outputs[0]: 0.0
+            }
             start_time = time.time()
             step, summaries, loss, accuracy = self.network_session.run(
                 [self.network_graph.get_operation_by_name("train/global_step").outputs[0],
